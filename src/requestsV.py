@@ -202,17 +202,19 @@ class Requests:
                     return [pd_url, glz_url]
 
     def get_current_version(self):
-        path = os.path.join(os.getenv('LOCALAPPDATA'), R'VALORANT\Saved\Logs\ShooterGame.log')
+        path = os.path.join(os.getenv('LOCALAPPDATA'), r'VALORANT\Saved\Logs\ShooterGame.log')
+
         with open(path, "r", encoding="utf8") as file:
-            while True:
-                line = file.readline()
+            for line in file:
                 if 'CI server version:' in line:
-                    version_without_shipping = line.split('CI server version: ')[1].strip()
-                    version = version_without_shipping.split("-")
-                    version.insert(2, "shipping")
-                    version = "-".join(version)
+                    # Extract the version EXACTLY as Riot logs it
+                    version = line.split('CI server version: ')[1].strip()
+
+                    # Log it for debugging
                     self.log(f"got version from logs '{version}'")
+
                     return version
+
 
     def get_lockfile(self, ignoreLockfile=False):
         #ignoring lockfile is for when lockfile exists but it's not really valid, (local endpoints are not initialized yet)

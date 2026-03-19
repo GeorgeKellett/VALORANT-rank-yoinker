@@ -11,22 +11,34 @@ class Content():
         return self.content
 
     def get_latest_season_id(self, content):
+        # Guard against missing Seasons key
+        if "Seasons" not in content:
+            self.log("ERROR: 'Seasons' missing from content-service response")
+            return None
         for season in content["Seasons"]:
-            if season["IsActive"] and season["Type"] == "act":
+            if season.get("IsActive") and season.get("Type") == "act":
                 self.log(f"retrieved season id: {season['ID']}")
                 return season["ID"]
+        return None
+
 
     def get_previous_season_id(self, content):
-        currentseason = []
+        if "Seasons" not in content:
+            self.log("ERROR: 'Seasons' missing from content-service response")
+            return None
+        currentseason = None
         for season in content["Seasons"]:
-            if season["IsActive"] and season["Type"] == "act":
+            if season.get("IsActive") and season.get("Type") == "act":
                 currentseason = season
-
+        if not currentseason:
+            return None
         for season in content["Seasons"]:
-            if currentseason["StartTime"] == season["EndTime"] and season["Type"] == "act":
+            if season.get("Type") == "act" and season.get("EndTime") == currentseason.get("StartTime"):
                 self.log(f"retrieved previous season id: {season['ID']}")
                 return season["ID"]
         return None
+
+
 
     def get_all_agents(self):
         rAgents = requests.get("https://valorant-api.com/v1/agents?isPlayableCharacter=true").json()

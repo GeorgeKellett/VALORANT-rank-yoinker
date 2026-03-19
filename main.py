@@ -145,6 +145,7 @@ try:
 
     valoApiSkins = requests.get("https://valorant-api.com/v1/weapons/skins")
     gameContent = content.get_content()
+    #print(gameContent) #Useful for debugging patches
     seasonID = content.get_latest_season_id(gameContent)
     previousSeasonID = content.get_previous_season_id(gameContent)
     lastGameState = ""
